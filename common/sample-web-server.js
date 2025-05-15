@@ -82,6 +82,19 @@ module.exports = function SampleWebServer(sampleConfig, extraOidcOptions, homePa
       attributes
     });
   });
+  
+app.get('/signed-out', (req, res) => {
+  res.send(`
+    <html>
+      <head><title>Signed Out</title></head>
+      <body style="text-align:center; font-family:sans-serif; margin-top:50px;">
+        <h1>👋 You’ve successfully signed out</h1>
+        <p>Thank you for using the LATAM Internal Portal.</p>
+        <a href="/">🔁 Log in again</a>
+      </body>
+    </html>
+  `);
+});
 
   oidc.on('ready', () => {
     // eslint-disable-next-line no-console
