@@ -4,8 +4,8 @@
  *
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
  * See the License for the specific language governing permissions and limitations under the License.
  */
@@ -44,7 +44,6 @@ module.exports = function SampleWebServer(sampleConfig, extraOidcOptions, homePa
     saveUninitialized: false
   }));
 
-  // Provide the configuration to the view layer because we show it on the homepage
   const displayConfig = Object.assign(
     {},
     sampleConfig.oidc,
@@ -55,7 +54,6 @@ module.exports = function SampleWebServer(sampleConfig, extraOidcOptions, homePa
 
   app.locals.oidcConfig = displayConfig;
 
-  // This server uses mustache templates located in views/ and css assets in assets/
   app.use('/assets', express.static(frontendDir));
   app.engine('mustache', mustacheExpress());
   app.set('view engine', 'mustache');
@@ -73,7 +71,6 @@ module.exports = function SampleWebServer(sampleConfig, extraOidcOptions, homePa
   });
 
   app.get('/profile', oidc.ensureAuthenticated(), (req, res) => {
-    // Convert the userinfo object into an attribute array, for rendering with mustache
     const userinfo = req.userContext && req.userContext.userinfo;
     const attributes = Object.entries(userinfo);
     res.render('profile', {
@@ -82,31 +79,25 @@ module.exports = function SampleWebServer(sampleConfig, extraOidcOptions, homePa
       attributes
     });
   });
-  
-app.get('/signed-out', (req, res) => {
-  res.send(
-    <html>
-      <head><title>Signed Out</title></head>
-      <body style="text-align:center; font-family:sans-serif; margin-top:50px;">
-        <h1>👋 You’ve successfully signed out</h1>
-        <p>Thank you for using the LATAM Internal Portal.</p>
-        <a href="/">🔁 Log in again</a>
-      </body>
-    </html>
-  );
-});
+
+  app.get('/signed-out', (req, res) => {
+    res.send(`
+      <html>
+        <head><title>Signed Out</title></head>
+        <body style="text-align:center; font-family:sans-serif; margin-top:50px;">
+          <h1>👋 You’ve successfully signed out</h1>
+          <p>Thank you for using the LATAM Internal Portal.</p>
+          <a href="/">🔁 Log in again</a>
+        </body>
+      </html>
+    `);
+  });
 
   oidc.on('ready', () => {
-    // eslint-disable-next-line no-console
-    app.listen(sampleConfig.port, () => console.log(App started on port ${sampleConfig.port}));
+    app.listen(sampleConfig.port, () => console.log(`App started on port ${sampleConfig.port}`));
   });
 
   oidc.on('error', err => {
-    // An error occurred with OIDC
-    // eslint-disable-next-line no-console
     console.error('OIDC ERROR: ', err);
-
-    // Throwing an error will terminate the server process
-    // throw err;
   });
 };
